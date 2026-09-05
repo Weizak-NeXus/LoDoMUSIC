@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeSpace - Минимализм</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Кастомные стили и анимации -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #050505; /* Глубокий черный */
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    /* Утонченный скроллбар */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #262626;
+      border-radius: 4px;
+    }
+    .custom-scroll:hover::-webkit-scrollbar-thumb {
+      background: #404040;
+    }
+
+    /* Анимации появления */
+    .fade-in {
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .fade-in-up {
+      opacity: 0;
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Плавное скрытие экранов */
+    .screen-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .screen-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    /* Стили карточек */
+    .card-hover-image {
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .group:hover .card-hover-image {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="h-screen w-screen relative select-none">
+
+  <!-- ================= ЭКРАН 1: АВТОРИЗАЦИЯ ================= -->
+  <div id="screen-auth" class="absolute inset-0 z-50 flex items-center justify-center bg-[#050505] screen-visible">
+    <div class="w-full max-w-sm p-8 fade-in-up">
+      <div class="mb-10 text-center">
+        <i data-lucide="audio-lines" class="w-10 h-10 mx-auto mb-4 text-white"></i>
+        <h1 class="text-2xl font-semibold tracking-tight mb-2">VibeSpace</h1>
+        <p class="text-neutral-500 text-sm">Создайте аккаунт или войдите</p>
+      </div>
+
+      <form id="auth-form" class="space-y-4">
+        <div>
+          <input 
+            type="text" 
+            id="username-input" 
+            placeholder="Ваш никнейм" 
+            class="w-full bg-[#121212] border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-white focus:bg-[#1a1a1a] transition-all duration-300"
+            required
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <input 
+            type="email" 
+            id="email-input" 
+            placeholder="Email" 
+            class="w-full bg-[#121212] border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-white focus:bg-[#1a1a1a] transition-all duration-300"
+            required
+            autocomplete="email"
+          />
+        </div>
+        <div>
+          <input 
+            type="password" 
+            id="password-input" 
+            placeholder="Пароль (от 6 символов)" 
+            class="w-full bg-[#121212] border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-white focus:bg-[#1a1a1a] transition-all duration-300"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          />
+        </div>
+        
+        <div id="auth-error" class="text-red-500 text-xs hidden text-center"></div>
+        
+        <button 
+          type="submit" 
+          id="auth-submit-btn"
+          class="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-neutral-200 hover:scale-[1.02] transition-all duration-300 flex justify-center items-center gap-2 group"
+        >
+          <span id="auth-btn-text">Продолжить</span> <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= ЭКРАН 2: ОНБОРДИНГ ================= -->
+  <div id="screen-onboarding" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#050505] screen-hidden">
+    <div class="max-w-4xl w-full px-8 flex flex-col items-center text-center">
+      <p class="text-neutral-500 font-medium tracking-widest uppercase text-xs mb-4 fade-in-up" style="animation-delay: 0.1s;">Добро пожаловать</p>
+      <h2 id="welcome-text" class="text-4xl md:text-5xl font-semibold tracking-tight mb-6 fade-in-up" style="animation-delay: 0.2s;">
+        Привет, Пользователь.
+      </h2>
+      <p class="text-neutral-400 text-lg mb-12 max-w-lg fade-in-up" style="animation-delay: 0.3s;">
+        Мы создали пространство, где музыка звучит чисто, а дизайн не отвлекает от главного.
+      </p>
+
+      <!-- Превью карточек для красоты -->
+      <div class="flex gap-4 mb-12 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&q=80" class="w-full h-full object-cover opacity-60 mix-blend-luminosity">
+        </div>
+        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative -translate-y-4">
+          <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&q=80" class="w-full h-full object-cover opacity-80">
+        </div>
+        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&q=80" class="w-full h-full object-cover opacity-60 mix-blend-luminosity">
+        </div>
+      </div>
+
+      <button id="btn-start-app" class="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors fade-in-up" style="animation-delay: 0.5s;">
+        Открыть приложение
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= ЭКРАН 3: ГЛАВНОЕ ПРИЛОЖЕНИЕ ================= -->
+  <div id="screen-main" class="absolute inset-0 z-30 flex flex-col bg-[#050505] screen-hidden">
+    
+    <!-- Верхний градиент (очень мягкий) -->
+    <div id="main-gradient" class="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-neutral-900 to-[#050505] opacity-30 pointer-events-none transition-colors duration-1000 z-0"></div>
+
+    <div class="flex flex-1 overflow-hidden relative z-10 p-2 gap-2">
+      
+      <!-- САЙДБАР -->
+      <aside class="w-60 bg-[#0a0a0a] border border-neutral-900 rounded-xl hidden md:flex flex-col">
+        <div class="p-6">
+          <div class="flex items-center gap-2 text-white mb-8">
+            <i data-lucide="audio-lines" class="w-6 h-6"></i>
+            <span class="font-semibold tracking-tight text-lg">VibeSpace</span>
+          </div>
+          
+          <nav class="space-y-4 text-sm font-medium text-neutral-400">
+            <a href="#" class="flex items-center gap-4 text-white transition-colors"><i data-lucide="home" class="w-5 h-5"></i> Главная</a>
+            <a href="#" class="flex items-center gap-4 hover:text-white transition-colors"><i data-lucide="search" class="w-5 h-5"></i> Поиск</a>
+            <a href="#" class="flex items-center gap-4 hover:text-white transition-colors"><i data-lucide="library" class="w-5 h-5"></i> Медиатека</a>
+          </nav>
+        </div>
+
+        <div class="px-6 py-4 mt-auto border-t border-neutral-900">
+          <div class="flex items-center gap-3 cursor-pointer group">
+            <div class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:text-white group-hover:bg-neutral-700 transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </div>
+            <span class="text-sm font-medium text-neutral-400 group-hover:text-white transition-colors">Новый плейлист</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ОСНОВНОЙ КОНТЕНТ -->
+      <main class="flex-1 bg-[#0a0a0a] border border-neutral-900 rounded-xl overflow-y-auto custom-scroll relative">
+        
+        <!-- Хедер -->
+        <header class="sticky top-0 z-20 flex items-center justify-between px-8 py-4 bg-[#0a0a0a]/80 backdrop-blur-md">
+          <div class="flex gap-2 text-neutral-400">
+            <button class="hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+            <button class="hover:text-white transition-colors"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <button class="text-neutral-400 hover:text-white transition-colors"><i data-lucide="bell" class="w-5 h-5"></i></button>
+            <div class="flex items-center gap-2 cursor-pointer bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 px-3 py-1.5 rounded-full transition-colors">
+              <div class="w-6 h-6 bg-white text-black rounded-full flex items-center justify-center text-xs font-bold" id="user-avatar">?</div>
+              <span class="text-xs font-medium text-white pr-1" id="user-name-display">User</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="p-8 pb-32">
+          <!-- Секция: Недавнее -->
+          <h2 class="text-2xl font-semibold tracking-tight text-white mb-6">С возвращением</h2>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12" id="grid-recent">
+            <!-- Карточки генерируются через JS -->
+          </div>
+
+          <!-- Секция: Подборки -->
+          <h2 class="text-xl font-semibold tracking-tight text-white mb-6">Кураторские подборки</h2>
+          <div class="flex gap-4 overflow-x-auto pb-4 custom-scroll" id="grid-curated">
+            <!-- Карточки генерируются через JS -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ================= ПЛЕЕР ВНИЗУ ================= -->
+    <footer class="h-20 bg-[#050505] border-t border-neutral-900 px-6 flex items-center justify-between z-50">
+      
+      <!-- Трек инфо -->
+      <div class="flex items-center gap-4 w-1/3 min-w-[180px]">
+        <div class="w-12 h-12 rounded bg-neutral-900 overflow-hidden relative border border-neutral-800">
+          <img id="player-img" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&q=80" class="w-full h-full object-cover">
+        </div>
+        <div class="flex flex-col">
+          <span id="player-title" class="text-white text-sm font-medium truncate">Midnight Drive</span>
+          <span id="player-artist" class="text-neutral-400 text-xs truncate mt-0.5">Synthwave Boy</span>
+        </div>
+        <button class="text-neutral-500 hover:text-white transition-colors ml-2"><i data-lucide="heart" class="w-4 h-4"></i></button>
+      </div>
+
+      <!-- Управление -->
+      <div class="flex flex-col items-center max-w-[40%] w-full">
+        <div class="flex items-center gap-6 mb-1.5">
+          <button class="text-neutral-500 hover:text-white transition-colors"><i data-lucide="shuffle" class="w-4 h-4"></i></button>
+          <button class="text-neutral-300 hover:text-white transition-colors"><i data-lucide="skip-back" class="w-5 h-5 fill-current"></i></button>
+          
+          <button id="play-pause-btn" class="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 transition-transform">
+            <i data-lucide="play" class="w-4 h-4 fill-current ml-0.5" id="play-icon"></i>
+            <i data-lucide="pause" class="w-4 h-4 fill-current hidden" id="pause-icon"></i>
+          </button>
+          
+          <button class="text-neutral-300 hover:text-white transition-colors"><i data-lucide="skip-forward" class="w-5 h-5 fill-current"></i></button>
+          <button class="text-neutral-500 hover:text-white transition-colors"><i data-lucide="repeat" class="w-4 h-4"></i></button>
+        </div>
+        
+        <!-- Прогресс бар -->
+        <div class="flex items-center gap-3 w-full max-w-md">
+          <span class="text-[10px] text-neutral-500 tabular-nums font-medium" id="time-current">0:00</span>
+          <div class="h-1 bg-neutral-800 rounded-full flex-1 relative cursor-pointer group">
+            <div id="progress-bar" class="h-full bg-white rounded-full w-0 group-hover:bg-neutral-300 transition-colors relative"></div>
+          </div>
+          <span class="text-[10px] text-neutral-500 tabular-nums font-medium">3:45</span>
+        </div>
+      </div>
+
+      <!-- Громкость / Доп -->
+      <div class="flex items-center justify-end gap-4 w-1/3 min-w-[150px] text-neutral-500">
+        <button class="hover:text-white transition-colors"><i data-lucide="mic-2" class="w-4 h-4"></i></button>
+        <button class="hover:text-white transition-colors"><i data-lucide="list-music" class="w-4 h-4"></i></button>
+        <div class="flex items-center gap-2 w-20 group cursor-pointer ml-2">
+          <i data-lucide="volume-2" class="w-4 h-4 group-hover:text-white transition-colors"></i>
+          <div class="h-1 bg-neutral-800 rounded-full flex-1 relative">
+            <div class="h-full w-2/3 bg-neutral-400 group-hover:bg-white transition-colors rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= СКРИПТЫ (Логика приложения и Firebase) ================= -->
+  <script type="module">
+    // Импорт SDK Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+    // Ваши настройки Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsU4G1d2wp_HXZ3TsZ8LNu7pd6eicpqao",
+      authDomain: "lodomusic-a9152.firebaseapp.com",
+      projectId: "lodomusic-a9152",
+      storageBucket: "lodomusic-a9152.firebasestorage.app",
+      messagingSenderId: "48528247466",
+      appId: "1:48528247466:web:725b22b01c488b09ae1ed3"
+    };
+
+    // Инициализация
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Инициализация иконок Lucide
+    lucide.createIcons();
+
+    // Данные для приложения
+    const RECENT_DATA = [
+      { id: 1, title: 'Lo-Fi Chill', artist: 'Для работы и учебы', img: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&q=80', color: 'from-orange-900/40' },
+      { id: 2, title: 'Кино', artist: 'Лучшее', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&q=80', color: 'from-neutral-700/40' },
+      { id: 3, title: 'Synthwave', artist: 'Ретро электроника', img: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&q=80', color: 'from-purple-900/40' },
+      { id: 4, title: 'Deep Focus', artist: 'Атмосферный эмбиент', img: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&q=80', color: 'from-blue-900/40' },
+    ];
+
+    const CURATED_DATA = [
+      { id: 11, title: 'Ночной Токио', desc: 'Эстетика неоновых улиц', img: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=300&q=80', color: 'from-pink-900/40' },
+      { id: 12, title: 'Лесной Эмбиент', desc: 'Звуки природы и спокойствие', img: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=300&q=80', color: 'from-green-900/40' },
+      { id: 13, title: 'Меланхолия', desc: 'Грустные мотивы', img: 'https://images.unsplash.com/photo-1458682625221-3a45f8a844c7?w=300&q=80', color: 'from-cyan-900/40' },
+      { id: 14, title: 'Минимал Техно', desc: 'Четкий ритм', img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80', color: 'from-neutral-800/40' },
+      { id: 15, title: 'Акустика', desc: 'Гитара и вокал', img: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&q=80', color: 'from-yellow-900/40' },
+    ];
+
+    // Элементы DOM
+    const screens = {
+      auth: document.getElementById('screen-auth'),
+      onboarding: document.getElementById('screen-onboarding'),
+      main: document.getElementById('screen-main')
+    };
+    
+    // Переменные состояния
+    let userName = '';
+    let isPlaying = false;
+    let progress = 0;
+    let progressInterval = null;
+
+    // --- НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ ---
+    function switchScreen(hideId, showId) {
+      screens[hideId].classList.remove('screen-visible');
+      screens[hideId].classList.add('screen-hidden');
+      
+      setTimeout(() => {
+        screens[showId].classList.remove('screen-hidden');
+        screens[showId].classList.add('screen-visible');
+      }, 500);
+    }
+
+    // --- 1. АВТОРИЗАЦИЯ FIREBASE ---
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('username-input').value.trim();
+      const emailInput = document.getElementById('email-input').value.trim();
+      const passwordInput = document.getElementById('password-input').value.trim();
+      const errorDiv = document.getElementById('auth-error');
+      const btnText = document.getElementById('auth-btn-text');
+
+      if(usernameInput && emailInput && passwordInput) {
+        errorDiv.classList.add('hidden');
+        btnText.innerText = "Подключение...";
+
+        try {
+          let userCredential;
+          
+          // Попытка войти в существующий аккаунт
+          try {
+            userCredential = await signInWithEmailAndPassword(auth, emailInput, passwordInput);
+          } catch (signInError) {
+            // Если аккаунт не найден (или другая ошибка), пытаемся зарегистрировать новый
+            userCredential = await createUserWithEmailAndPassword(auth, emailInput, passwordInput);
+            
+            // Сохраняем никнейм в профиле нового пользователя
+            await updateProfile(userCredential.user, {
+              displayName: usernameInput
+            });
+          }
+
+          // Успешный вход или регистрация
+          const user = userCredential.user;
+          userName = user.displayName || usernameInput;
+          
+          // Настраиваем тексты перед показом
+          document.getElementById('welcome-text').innerText = `Привет, ${userName}.`;
+          document.getElementById('user-avatar').innerText = userName.charAt(0).toUpperCase();
+          document.getElementById('user-name-display').innerText = userName;
+
+          switchScreen('auth', 'onboarding');
+        } catch (error) {
+          // Вывод ошибки пользователю
+          errorDiv.classList.remove('hidden');
+          if (error.code === 'auth/email-already-in-use') {
+            errorDiv.innerText = "Email уже используется. Проверьте пароль.";
+          } else if (error.code === 'auth/invalid-credential') {
+            errorDiv.innerText = "Неверный Email или пароль.";
+          } else if (error.code === 'auth/weak-password') {
+            errorDiv.innerText = "Пароль слишком слабый (минимум 6 символов).";
+          } else {
+            errorDiv.innerText = "Ошибка: " + error.message;
+          }
+        } finally {
+          btnText.innerText = "Продолжить";
+        }
+      }
+    });
+
+    // 2. Завершение онбординга
+    document.getElementById('btn-start-app').addEventListener('click', () => {
+      renderContent();
+      switchScreen('onboarding', 'main');
+    });
+
+    // --- РЕНДЕР КОНТЕНТА ---
+    function renderContent() {
+      const gridRecent = document.getElementById('grid-recent');
+      gridRecent.innerHTML = RECENT_DATA.map(item => `
+        <div onclick="playTrack('${item.title}', '${item.artist}', '${item.img}', '${item.color}')" 
+             class="bg-neutral-900/50 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg p-3 flex items-center gap-4 cursor-pointer group transition-all duration-300">
+          <div class="w-14 h-14 rounded-md overflow-hidden bg-neutral-800 shadow-md shrink-0">
+            <img src="${item.img}" class="w-full h-full object-cover">
+          </div>
+          <div class="flex flex-col flex-1 truncate">
+            <span class="text-sm font-semibold text-white truncate">${item.title}</span>
+            <span class="text-xs text-neutral-500 truncate">${item.artist}</span>
+          </div>
+          <div class="opacity-0 group-hover:opacity-100 mr-2 bg-white text-black w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-md shrink-0">
+            <i data-lucide="play" class="w-4 h-4 fill-current ml-0.5"></i>
+          </div>
+        </div>
+      `).join('');
+
+      const gridCurated = document.getElementById('grid-curated');
+      gridCurated.innerHTML = CURATED_DATA.map(item => `
+        <div onclick="playTrack('${item.title}', '${item.desc}', '${item.img}', '${item.color}')" 
+             class="w-44 flex-shrink-0 cursor-pointer group">
+          <div class="w-full aspect-square rounded-lg overflow-hidden mb-3 relative border border-neutral-800 group-hover:border-neutral-600 transition-colors">
+            <img src="${item.img}" class="w-full h-full object-cover card-hover-image">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
+            <div class="absolute bottom-2 right-2 bg-white text-black w-10 h-10 rounded-full flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-20 shadow-lg">
+              <i data-lucide="play" class="w-5 h-5 fill-current ml-0.5"></i>
+            </div>
+          </div>
+          <h3 class="text-sm font-semibold text-white mb-0.5 truncate">${item.title}</h3>
+          <p class="text-xs text-neutral-500 truncate">${item.desc}</p>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // --- ЛОГИКА ПЛЕЕРА ---
+    const playBtn = document.getElementById('play-pause-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const progressBar = document.getElementById('progress-bar');
+    const timeCurrent = document.getElementById('time-current');
+    
+    // Привязываем функцию к window, чтобы она работала из inline onclick в HTML
+    window.playTrack = function(title, artist, img, colorClass) {
+      document.getElementById('player-title').innerText = title;
+      document.getElementById('player-artist').innerText = artist;
+      document.getElementById('player-img').src = img;
+      
+      const bg = document.getElementById('main-gradient');
+      bg.className = `absolute top-0 left-0 right-0 h-96 bg-gradient-to-b ${colorClass} to-[#050505] opacity-20 pointer-events-none transition-colors duration-1000 z-0`;
+      
+      progress = 0;
+      startPlaying();
+    };
+
+    playBtn.addEventListener('click', () => {
+      isPlaying ? stopPlaying() : startPlaying();
+    });
+
+    function startPlaying() {
+      isPlaying = true;
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
+      
+      if(!progressInterval) {
+        progressInterval = setInterval(() => {
+          progress += 0.5;
+          if(progress >= 100) progress = 0;
+          
+          progressBar.style.width = `${progress}%`;
+          
+          const currentSecs = Math.floor((progress / 100) * 225);
+          const mins = Math.floor(currentSecs / 60);
+          const secs = (currentSecs % 60).toString().padStart(2, '0');
+          timeCurrent.innerText = `${mins}:${secs}`;
+          
+        }, 1000);
+      }
+    }
+
+    function stopPlaying() {
+      isPlaying = false;
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+  </script>
+</body>
+</html>
