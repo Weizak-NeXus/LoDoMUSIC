@@ -76,6 +76,16 @@
     .group:hover .card-hover-image {
       transform: scale(1.05);
     }
+
+    /* Анимация волны */
+    @keyframes pulse-wave {
+      0% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+    .wave-anim {
+      animation: pulse-wave 3s infinite ease-in-out;
+    }
   </style>
 </head>
 <body class="h-screen w-screen relative select-none">
@@ -83,20 +93,19 @@
   <!-- ================= ЭКРАН 1: АВТОРИЗАЦИЯ ================= -->
   <div id="screen-auth" class="absolute inset-0 z-50 flex items-center justify-center bg-[#050505] screen-visible">
     <div class="w-full max-w-sm p-8 fade-in-up">
-      <div class="mb-10 text-center">
+      <div class="mb-8 text-center">
         <i data-lucide="audio-lines" class="w-10 h-10 mx-auto mb-4 text-white"></i>
-        <h1 class="text-2xl font-semibold tracking-tight mb-2">VibeSpace</h1>
-        <p class="text-neutral-500 text-sm">Создайте аккаунт или войдите</p>
+        <h1 class="text-2xl font-semibold tracking-tight mb-2" id="auth-title">Создать аккаунт</h1>
+        <p class="text-neutral-500 text-sm" id="auth-subtitle">Присоединяйтесь к VibeSpace</p>
       </div>
 
       <form id="auth-form" class="space-y-4">
-        <div>
+        <div id="username-container">
           <input 
             type="text" 
             id="username-input" 
             placeholder="Ваш никнейм" 
             class="w-full bg-[#121212] border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-white focus:bg-[#1a1a1a] transition-all duration-300"
-            required
             autocomplete="off"
           />
         </div>
@@ -110,16 +119,20 @@
             autocomplete="email"
           />
         </div>
-        <div>
+        <div class="relative">
           <input 
             type="password" 
             id="password-input" 
             placeholder="Пароль (от 6 символов)" 
-            class="w-full bg-[#121212] border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-white focus:bg-[#1a1a1a] transition-all duration-300"
+            class="w-full bg-[#121212] border border-neutral-800 rounded-lg px-4 py-3 pr-10 text-white placeholder-neutral-600 focus:outline-none focus:border-white focus:bg-[#1a1a1a] transition-all duration-300"
             required
             minlength="6"
             autocomplete="new-password"
           />
+          <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors">
+            <i data-lucide="eye" class="w-5 h-5" id="eye-icon"></i>
+            <i data-lucide="eye-off" class="w-5 h-5 hidden" id="eye-off-icon"></i>
+          </button>
         </div>
         
         <div id="auth-error" class="text-red-500 text-xs hidden text-center"></div>
@@ -127,11 +140,15 @@
         <button 
           type="submit" 
           id="auth-submit-btn"
-          class="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-neutral-200 hover:scale-[1.02] transition-all duration-300 flex justify-center items-center gap-2 group"
+          class="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-neutral-200 hover:scale-[1.02] transition-all duration-300 flex justify-center items-center gap-2 group mt-2"
         >
-          <span id="auth-btn-text">Продолжить</span> <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+          <span id="auth-btn-text">Зарегистрироваться</span> <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
         </button>
       </form>
+      
+      <div id="auth-toggle-btn" class="text-sm text-neutral-500 text-center mt-6 cursor-pointer hover:text-white transition-colors">
+        Уже есть аккаунт? <span class="text-white font-medium underline underline-offset-4">Войти</span>
+      </div>
     </div>
   </div>
 
@@ -148,18 +165,18 @@
 
       <!-- Превью карточек для красоты -->
       <div class="flex gap-4 mb-12 fade-in-up" style="animation-delay: 0.4s;">
-        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative">
+        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative shadow-2xl shadow-purple-900/20">
           <img src="https://picsum.photos/seed/music1/300/300" class="w-full h-full object-cover opacity-60 mix-blend-luminosity" alt="cover">
         </div>
-        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative -translate-y-4">
+        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative -translate-y-4 shadow-2xl shadow-blue-900/20">
           <img src="https://picsum.photos/seed/music2/300/300" class="w-full h-full object-cover opacity-80" alt="cover">
         </div>
-        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative">
+        <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative shadow-2xl shadow-green-900/20">
           <img src="https://picsum.photos/seed/music3/300/300" class="w-full h-full object-cover opacity-60 mix-blend-luminosity" alt="cover">
         </div>
       </div>
 
-      <button id="btn-start-app" class="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors fade-in-up" style="animation-delay: 0.5s;">
+      <button id="btn-start-app" class="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors fade-in-up hover:scale-105" style="animation-delay: 0.5s;">
         Открыть приложение
       </button>
     </div>
@@ -169,7 +186,7 @@
   <div id="screen-main" class="absolute inset-0 z-30 flex flex-col bg-[#050505] screen-hidden">
     
     <!-- Верхний градиент (очень мягкий) -->
-    <div id="main-gradient" class="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-neutral-900 to-[#050505] opacity-30 pointer-events-none transition-colors duration-1000 z-0"></div>
+    <div id="main-gradient" class="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-neutral-900 to-[#050505] opacity-30 pointer-events-none transition-colors duration-1000 z-0"></div>
 
     <div class="flex flex-1 overflow-hidden relative z-10 p-2 gap-2">
       
@@ -177,7 +194,7 @@
       <aside class="w-60 bg-[#0a0a0a] border border-neutral-900 rounded-xl hidden md:flex flex-col">
         <div class="p-6">
           <div class="flex items-center gap-2 text-white mb-8">
-            <i data-lucide="audio-lines" class="w-6 h-6"></i>
+            <i data-lucide="audio-lines" class="w-6 h-6 text-indigo-400"></i>
             <span class="font-semibold tracking-tight text-lg">VibeSpace</span>
           </div>
           
@@ -214,7 +231,7 @@
             <!-- Профиль с выпадающим меню -->
             <div class="relative">
               <div id="profile-btn" class="flex items-center gap-2 cursor-pointer bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 px-3 py-1.5 rounded-full transition-colors select-none">
-                <div class="w-6 h-6 bg-white text-black rounded-full flex items-center justify-center text-xs font-bold" id="user-avatar">?</div>
+                <div class="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold" id="user-avatar">?</div>
                 <span class="text-xs font-medium text-white pr-1" id="user-name-display">User</span>
               </div>
               
@@ -229,6 +246,24 @@
         </header>
 
         <div class="p-8 pb-32">
+          
+          <!-- МОЯ ВОЛНА (Умный подбор музыки) -->
+          <div class="mb-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-indigo-900/60 via-purple-900/60 to-black border border-neutral-800 flex flex-col sm:flex-row items-start sm:items-center justify-between group cursor-pointer hover:border-neutral-600 transition-all shadow-2xl relative overflow-hidden" id="my-wave-btn">
+            <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <!-- Декоративные волны на фоне -->
+            <div class="absolute right-0 bottom-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl wave-anim pointer-events-none"></div>
+
+            <div class="relative z-10">
+              <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                <i data-lucide="radio" class="w-8 h-8 text-purple-400"></i> Моя Волна
+              </h2>
+              <p class="text-neutral-300 text-sm">Бесконечный поток музыки под ваш вкус. Нажмите, чтобы начать.</p>
+            </div>
+            <div class="mt-6 sm:mt-0 relative z-10 w-14 h-14 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)] shrink-0">
+              <i data-lucide="play" class="w-6 h-6 text-black fill-current ml-1"></i>
+            </div>
+          </div>
+
           <!-- Секция: Недавнее -->
           <h2 class="text-2xl font-semibold tracking-tight text-white mb-6">С возвращением</h2>
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12" id="grid-recent">
@@ -253,8 +288,8 @@
           <img id="player-img" src="https://picsum.photos/seed/default/100/100" class="w-full h-full object-cover">
         </div>
         <div class="flex flex-col">
-          <span id="player-title" class="text-white text-sm font-medium truncate">Midnight Drive</span>
-          <span id="player-artist" class="text-neutral-400 text-xs truncate mt-0.5">Synthwave Boy</span>
+          <span id="player-title" class="text-white text-sm font-medium truncate">Ничего не играет</span>
+          <span id="player-artist" class="text-neutral-400 text-xs truncate mt-0.5">Выберите трек или Волну</span>
         </div>
         <button class="text-neutral-500 hover:text-white transition-colors ml-2"><i data-lucide="heart" class="w-4 h-4"></i></button>
       </div>
@@ -263,24 +298,24 @@
       <div class="flex flex-col items-center max-w-[40%] w-full">
         <div class="flex items-center gap-6 mb-1.5">
           <button class="text-neutral-500 hover:text-white transition-colors"><i data-lucide="shuffle" class="w-4 h-4"></i></button>
-          <button class="text-neutral-300 hover:text-white transition-colors"><i data-lucide="skip-back" class="w-5 h-5 fill-current"></i></button>
+          <button class="text-neutral-300 hover:text-white transition-colors hover:scale-110" id="btn-prev-track"><i data-lucide="skip-back" class="w-5 h-5 fill-current"></i></button>
           
-          <button id="play-pause-btn" class="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 transition-transform">
+          <button id="play-pause-btn" class="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 transition-transform shadow-md">
             <i data-lucide="play" class="w-4 h-4 fill-current ml-0.5" id="play-icon"></i>
             <i data-lucide="pause" class="w-4 h-4 fill-current hidden" id="pause-icon"></i>
           </button>
           
-          <button class="text-neutral-300 hover:text-white transition-colors"><i data-lucide="skip-forward" class="w-5 h-5 fill-current"></i></button>
+          <button class="text-neutral-300 hover:text-white transition-colors hover:scale-110" id="btn-next-track"><i data-lucide="skip-forward" class="w-5 h-5 fill-current"></i></button>
           <button class="text-neutral-500 hover:text-white transition-colors"><i data-lucide="repeat" class="w-4 h-4"></i></button>
         </div>
         
         <!-- Прогресс бар -->
         <div class="flex items-center gap-3 w-full max-w-md">
           <span class="text-[10px] text-neutral-500 tabular-nums font-medium" id="time-current">0:00</span>
-          <div class="h-1 bg-neutral-800 rounded-full flex-1 relative cursor-pointer group">
-            <div id="progress-bar" class="h-full bg-white rounded-full w-0 group-hover:bg-neutral-300 transition-colors relative"></div>
+          <div class="h-1 bg-neutral-800 rounded-full flex-1 relative cursor-pointer group" id="progress-container">
+            <div id="progress-bar" class="h-full bg-white rounded-full w-0 group-hover:bg-indigo-400 transition-colors relative"></div>
           </div>
-          <span class="text-[10px] text-neutral-500 tabular-nums font-medium">3:45</span>
+          <span class="text-[10px] text-neutral-500 tabular-nums font-medium" id="time-total">0:00</span>
         </div>
       </div>
 
@@ -288,10 +323,10 @@
       <div class="flex items-center justify-end gap-4 w-1/3 min-w-[150px] text-neutral-500">
         <button class="hover:text-white transition-colors"><i data-lucide="mic-2" class="w-4 h-4"></i></button>
         <button class="hover:text-white transition-colors"><i data-lucide="list-music" class="w-4 h-4"></i></button>
-        <div class="flex items-center gap-2 w-20 group cursor-pointer ml-2">
-          <i data-lucide="volume-2" class="w-4 h-4 group-hover:text-white transition-colors"></i>
-          <div class="h-1 bg-neutral-800 rounded-full flex-1 relative">
-            <div class="h-full w-2/3 bg-neutral-400 group-hover:bg-white transition-colors rounded-full"></div>
+        <div class="flex items-center gap-2 w-20 group ml-2">
+          <i data-lucide="volume-2" class="w-4 h-4 group-hover:text-white transition-colors cursor-pointer" id="mute-btn"></i>
+          <div class="h-1 bg-neutral-800 rounded-full flex-1 relative cursor-pointer" id="volume-container">
+            <div class="h-full w-full bg-neutral-400 group-hover:bg-white transition-colors rounded-full" id="volume-bar"></div>
           </div>
         </div>
       </div>
@@ -300,7 +335,7 @@
 
   <!-- ================= СКРИПТЫ (Логика приложения и Firebase) ================= -->
   <script type="module">
-    // Импорт SDK Firebase (Добавлены onAuthStateChanged и signOut)
+    // Импорт SDK Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
@@ -321,21 +356,31 @@
     // Инициализация иконок Lucide
     lucide.createIcons();
 
-    // Данные для приложения (картинки заменены на надежный picsum.photos)
+    // Рабочие бесплатные аудиотреки (MP3)
+    const REAL_AUDIO_TRACKS = [
+      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+    ];
+
+    // Данные для приложения с прикрепленным аудио
     const RECENT_DATA = [
-      { id: 1, title: 'Lo-Fi Chill', artist: 'Для работы и учебы', img: 'https://picsum.photos/seed/chill/300/300', color: 'from-orange-900/40' },
-      { id: 2, title: 'Кино', artist: 'Лучшее', img: 'https://picsum.photos/seed/kino/300/300', color: 'from-neutral-700/40' },
-      { id: 3, title: 'Synthwave', artist: 'Ретро электроника', img: 'https://picsum.photos/seed/synth/300/300', color: 'from-purple-900/40' },
-      { id: 4, title: 'Deep Focus', artist: 'Атмосферный эмбиент', img: 'https://picsum.photos/seed/focus/300/300', color: 'from-blue-900/40' },
+      { id: 1, title: 'Электронный вайб', artist: 'Для работы', img: 'https://picsum.photos/seed/chill/300/300', color: 'from-orange-900/40', audioUrl: REAL_AUDIO_TRACKS[0] },
+      { id: 2, title: 'Кино', artist: 'Лучшее', img: 'https://picsum.photos/seed/kino/300/300', color: 'from-neutral-700/40', audioUrl: REAL_AUDIO_TRACKS[1] },
+      { id: 3, title: 'Synthwave', artist: 'Ретро электроника', img: 'https://picsum.photos/seed/synth/300/300', color: 'from-purple-900/40', audioUrl: REAL_AUDIO_TRACKS[2] },
+      { id: 4, title: 'Deep Focus', artist: 'Атмосферный эмбиент', img: 'https://picsum.photos/seed/focus/300/300', color: 'from-blue-900/40', audioUrl: REAL_AUDIO_TRACKS[3] },
     ];
 
     const CURATED_DATA = [
-      { id: 11, title: 'Ночной Токио', desc: 'Эстетика неоновых улиц', img: 'https://picsum.photos/seed/tokyo/300/300', color: 'from-pink-900/40' },
-      { id: 12, title: 'Лесной Эмбиент', desc: 'Звуки природы и спокойствие', img: 'https://picsum.photos/seed/forest/300/300', color: 'from-green-900/40' },
-      { id: 13, title: 'Меланхолия', desc: 'Грустные мотивы', img: 'https://picsum.photos/seed/sad/300/300', color: 'from-cyan-900/40' },
-      { id: 14, title: 'Минимал Техно', desc: 'Четкий ритм', img: 'https://picsum.photos/seed/techno/300/300', color: 'from-neutral-800/40' },
-      { id: 15, title: 'Акустика', desc: 'Гитара и вокал', img: 'https://picsum.photos/seed/guitar/300/300', color: 'from-yellow-900/40' },
+      { id: 11, title: 'Ночной Токио', desc: 'Эстетика неоновых улиц', img: 'https://picsum.photos/seed/tokyo/300/300', color: 'from-pink-900/40', audioUrl: REAL_AUDIO_TRACKS[3] },
+      { id: 12, title: 'Лесной Эмбиент', desc: 'Звуки природы и спокойствие', img: 'https://picsum.photos/seed/forest/300/300', color: 'from-green-900/40', audioUrl: REAL_AUDIO_TRACKS[0] },
+      { id: 13, title: 'Меланхолия', desc: 'Грустные мотивы', img: 'https://picsum.photos/seed/sad/300/300', color: 'from-cyan-900/40', audioUrl: REAL_AUDIO_TRACKS[1] },
+      { id: 14, title: 'Минимал Техно', desc: 'Четкий ритм', img: 'https://picsum.photos/seed/techno/300/300', color: 'from-neutral-800/40', audioUrl: REAL_AUDIO_TRACKS[2] },
+      { id: 15, title: 'Акустика', desc: 'Гитара и вокал', img: 'https://picsum.photos/seed/guitar/300/300', color: 'from-yellow-900/40', audioUrl: REAL_AUDIO_TRACKS[0] },
     ];
+
+    const ALL_TRACKS = [...RECENT_DATA, ...CURATED_DATA];
 
     // Элементы DOM
     const screens = {
@@ -351,9 +396,6 @@
 
     // Переменные состояния
     let userName = '';
-    let isPlaying = false;
-    let progress = 0;
-    let progressInterval = null;
 
     // --- НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ ---
     function switchScreen(hideId, showId) {
@@ -372,24 +414,21 @@
       document.getElementById('user-name-display').innerText = name;
     }
 
-    // --- ПРОСЛУШКА СОСТОЯНИЯ АВТОРИЗАЦИИ (Для сохранения сессии) ---
+    // --- ПРОСЛУШКА СОСТОЯНИЯ АВТОРИЗАЦИИ ---
     let isInitialLoad = true;
-    let isManualLogin = false; // Флаг, чтобы не перепрыгивать экраны при ручном входе
+    let isManualLogin = false;
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Пользователь уже авторизован
         userName = user.displayName || user.email.split('@')[0];
         updateUIWithUser(userName);
         renderContent();
         
-        // Если это первоначальная загрузка (мы только обновили страницу)
         if (isInitialLoad && !isManualLogin) {
           screens.auth.classList.replace('screen-visible', 'screen-hidden');
           screens.main.classList.replace('screen-hidden', 'screen-visible');
         }
       } else {
-        // Пользователь не авторизован (или вышел)
         screens.main.classList.replace('screen-visible', 'screen-hidden');
         screens.onboarding.classList.replace('screen-visible', 'screen-hidden');
         screens.auth.classList.replace('screen-hidden', 'screen-visible');
@@ -397,66 +436,92 @@
       isInitialLoad = false;
     });
 
-    // --- 1. АВТОРИЗАЦИЯ FIREBASE ---
-    document.getElementById('auth-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const usernameInput = document.getElementById('username-input').value.trim();
-      const emailInput = document.getElementById('email-input').value.trim();
-      const passwordInput = document.getElementById('password-input').value.trim();
-      const errorDiv = document.getElementById('auth-error');
-      const btnText = document.getElementById('auth-btn-text');
-
-      if(usernameInput && emailInput && passwordInput) {
-        errorDiv.classList.add('hidden');
-        btnText.innerText = "Подключение...";
-        isManualLogin = true; // Отмечаем, что вход совершен вручную
-
-        try {
-          let userCredential;
-          
-          // Попытка войти в существующий аккаунт
-          try {
-            userCredential = await signInWithEmailAndPassword(auth, emailInput, passwordInput);
-            
-            // Если это просто вход - перекидываем сразу в главное приложение
-            userName = userCredential.user.displayName || usernameInput;
-            updateUIWithUser(userName);
-            switchScreen('auth', 'main');
-            
-          } catch (signInError) {
-            // Если аккаунт не найден, пытаемся зарегистрировать новый
-            userCredential = await createUserWithEmailAndPassword(auth, emailInput, passwordInput);
-            
-            // Сохраняем никнейм в профиле нового пользователя
-            await updateProfile(userCredential.user, {
-              displayName: usernameInput
-            });
-            
-            userName = usernameInput;
-            updateUIWithUser(userName);
-            // Если это регистрация - показываем онбординг (приветствие)
-            switchScreen('auth', 'onboarding');
-          }
-        } catch (error) {
-          // Вывод ошибки пользователю
-          errorDiv.classList.remove('hidden');
-          if (error.code === 'auth/email-already-in-use') {
-            errorDiv.innerText = "Email уже используется. Проверьте пароль.";
-          } else if (error.code === 'auth/invalid-credential') {
-            errorDiv.innerText = "Неверный Email или пароль.";
-          } else if (error.code === 'auth/weak-password') {
-            errorDiv.innerText = "Пароль слишком слабый (минимум 6 символов).";
-          } else {
-            console.error(error);
-            errorDiv.innerText = "Ошибка: проверьте консоль разработчика.";
-          }
-        } finally {
-          btnText.innerText = "Продолжить";
-        }
+    // --- ЛОГИКА ФОРМЫ (ВХОД / РЕГИСТРАЦИЯ) ---
+    let isLoginMode = false;
+    const authToggleBtn = document.getElementById('auth-toggle-btn');
+    const usernameContainer = document.getElementById('username-container');
+    const usernameInput = document.getElementById('username-input');
+    const authTitle = document.getElementById('auth-title');
+    const authSubtitle = document.getElementById('auth-subtitle');
+    const authBtnText = document.getElementById('auth-btn-text');
+    
+    // Переключение Вход <-> Регистрация
+    authToggleBtn.addEventListener('click', () => {
+      isLoginMode = !isLoginMode;
+      document.getElementById('auth-error').classList.add('hidden');
+      
+      if (isLoginMode) {
+        authTitle.innerText = "Вход в аккаунт";
+        authSubtitle.innerText = "С возвращением в VibeSpace";
+        authBtnText.innerText = "Войти";
+        usernameContainer.classList.add('hidden');
+        usernameInput.removeAttribute('required');
+        authToggleBtn.innerHTML = `Нет аккаунта? <span class="text-white font-medium underline underline-offset-4">Создать</span>`;
+      } else {
+        authTitle.innerText = "Создать аккаунт";
+        authSubtitle.innerText = "Присоединяйтесь к VibeSpace";
+        authBtnText.innerText = "Зарегистрироваться";
+        usernameContainer.classList.remove('hidden');
+        usernameInput.setAttribute('required', 'true');
+        authToggleBtn.innerHTML = `Уже есть аккаунт? <span class="text-white font-medium underline underline-offset-4">Войти</span>`;
       }
     });
 
-    // 2. Завершение онбординга
+    // Показать/Скрыть пароль
+    const togglePasswordBtn = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password-input');
+    const eyeIcon = document.getElementById('eye-icon');
+    const eyeOffIcon = document.getElementById('eye-off-icon');
+
+    togglePasswordBtn.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      eyeIcon.classList.toggle('hidden');
+      eyeOffIcon.classList.toggle('hidden');
+    });
+
+    // Отправка формы авторизации
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uName = usernameInput.value.trim();
+      const emailInput = document.getElementById('email-input').value.trim();
+      const passInput = passwordInput.value.trim();
+      const errorDiv = document.getElementById('auth-error');
+
+      errorDiv.classList.add('hidden');
+      authBtnText.innerText = "Загрузка...";
+      isManualLogin = true;
+
+      try {
+        if (isLoginMode) {
+          // Логика Входа
+          const userCredential = await signInWithEmailAndPassword(auth, emailInput, passInput);
+          userName = userCredential.user.displayName || emailInput.split('@')[0];
+          updateUIWithUser(userName);
+          switchScreen('auth', 'main');
+        } else {
+          // Логика Регистрации
+          if(!uName) throw new Error("Введите никнейм");
+          const userCredential = await createUserWithEmailAndPassword(auth, emailInput, passInput);
+          await updateProfile(userCredential.user, { displayName: uName });
+          
+          userName = uName;
+          updateUIWithUser(userName);
+          switchScreen('auth', 'onboarding');
+        }
+      } catch (error) {
+        errorDiv.classList.remove('hidden');
+        if (error.code === 'auth/email-already-in-use') errorDiv.innerText = "Этот Email уже зарегистрирован.";
+        else if (error.code === 'auth/invalid-credential') errorDiv.innerText = "Неверный Email или пароль.";
+        else if (error.code === 'auth/weak-password') errorDiv.innerText = "Пароль слишком слабый.";
+        else if (error.message === "Введите никнейм") errorDiv.innerText = error.message;
+        else errorDiv.innerText = "Ошибка авторизации.";
+      } finally {
+        authBtnText.innerText = isLoginMode ? "Войти" : "Зарегистрироваться";
+      }
+    });
+
+    // Завершение онбординга
     document.getElementById('btn-start-app').addEventListener('click', () => {
       renderContent();
       switchScreen('onboarding', 'main');
@@ -468,7 +533,6 @@
       profileMenu.classList.toggle('flex');
     });
 
-    // Скрытие меню при клике вне его
     document.addEventListener('click', (e) => {
       if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
         profileMenu.classList.add('hidden');
@@ -478,10 +542,11 @@
 
     logoutBtn.addEventListener('click', async () => {
       try {
+        audioPlayer.pause();
         await signOut(auth);
-        window.location.reload(); // Перезагружаем страницу после выхода для чистоты состояния
+        window.location.reload();
       } catch (error) {
-        console.error("Ошибка при выходе: ", error);
+        console.error(error);
       }
     });
 
@@ -489,7 +554,7 @@
     function renderContent() {
       const gridRecent = document.getElementById('grid-recent');
       gridRecent.innerHTML = RECENT_DATA.map(item => `
-        <div onclick="playTrack('${item.title}', '${item.artist}', '${item.img}', '${item.color}')" 
+        <div onclick="playSelectedTrack('${item.title}', '${item.artist}', '${item.img}', '${item.color}', '${item.audioUrl}')" 
              class="bg-neutral-900/50 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg p-3 flex items-center gap-4 cursor-pointer group transition-all duration-300">
           <div class="w-14 h-14 rounded-md overflow-hidden bg-neutral-800 shadow-md shrink-0">
             <img src="${item.img}" class="w-full h-full object-cover">
@@ -506,7 +571,7 @@
 
       const gridCurated = document.getElementById('grid-curated');
       gridCurated.innerHTML = CURATED_DATA.map(item => `
-        <div onclick="playTrack('${item.title}', '${item.desc}', '${item.img}', '${item.color}')" 
+        <div onclick="playSelectedTrack('${item.title}', '${item.desc}', '${item.img}', '${item.color}', '${item.audioUrl}')" 
              class="w-44 flex-shrink-0 cursor-pointer group">
           <div class="w-full aspect-square rounded-lg overflow-hidden mb-3 relative border border-neutral-800 group-hover:border-neutral-600 transition-colors">
             <img src="${item.img}" class="w-full h-full object-cover card-hover-image">
@@ -523,58 +588,133 @@
       lucide.createIcons();
     }
 
-    // --- ЛОГИКА ПЛЕЕРА ---
+    // ================= НАСТОЯЩИЙ АУДИО ПЛЕЕР =================
+    const audioPlayer = new Audio();
     const playBtn = document.getElementById('play-pause-btn');
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
     const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
     const timeCurrent = document.getElementById('time-current');
+    const timeTotal = document.getElementById('time-total');
     
-    // Привязываем функцию к window, чтобы она работала из inline onclick в HTML
-    window.playTrack = function(title, artist, img, colorClass) {
+    // Форматирование времени в мм:сс
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // Запуск определенного трека
+    window.playSelectedTrack = function(title, artist, img, colorClass, audioUrl) {
       document.getElementById('player-title').innerText = title;
       document.getElementById('player-artist').innerText = artist;
       document.getElementById('player-img').src = img;
       
       const bg = document.getElementById('main-gradient');
-      bg.className = `absolute top-0 left-0 right-0 h-96 bg-gradient-to-b ${colorClass} to-[#050505] opacity-20 pointer-events-none transition-colors duration-1000 z-0`;
+      bg.className = `absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b ${colorClass} to-[#050505] opacity-30 pointer-events-none transition-colors duration-1000 z-0`;
       
-      progress = 0;
-      startPlaying();
+      // Загрузка настоящего аудио
+      audioPlayer.src = audioUrl;
+      audioPlayer.play();
     };
 
-    playBtn.addEventListener('click', () => {
-      isPlaying ? stopPlaying() : startPlaying();
+    // "Моя Волна" (Умный подбор музыки)
+    document.getElementById('my-wave-btn').addEventListener('click', () => {
+      // Выбираем случайный трек
+      const randomTrack = ALL_TRACKS[Math.floor(Math.random() * ALL_TRACKS.length)];
+      
+      // Меняем интерфейс: сильная заливка, анимация
+      document.getElementById('main-gradient').className = `absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b ${randomTrack.color} to-[#050505] opacity-50 pointer-events-none transition-all duration-1000 z-0`;
+      
+      // Имитация эффекта Yandex Music (Моя Волна)
+      document.getElementById('player-title').innerText = "Моя Волна: " + randomTrack.title;
+      document.getElementById('player-artist').innerText = "Подобранно для вас";
+      document.getElementById('player-img').src = randomTrack.img;
+      
+      audioPlayer.src = randomTrack.audioUrl;
+      audioPlayer.play();
     });
 
-    function startPlaying() {
-      isPlaying = true;
+    // Обработка Play / Pause
+    playBtn.addEventListener('click', () => {
+      if (!audioPlayer.src) return; // Если трек еще не выбран
+      if (audioPlayer.paused) {
+        audioPlayer.play();
+      } else {
+        audioPlayer.pause();
+      }
+    });
+
+    // Следующий / Предыдущий трек (включает случайный)
+    const nextTrack = () => {
+      const randomTrack = ALL_TRACKS[Math.floor(Math.random() * ALL_TRACKS.length)];
+      playSelectedTrack(randomTrack.title, randomTrack.artist, randomTrack.img, randomTrack.color, randomTrack.audioUrl);
+    };
+    document.getElementById('btn-next-track').addEventListener('click', nextTrack);
+    document.getElementById('btn-prev-track').addEventListener('click', nextTrack);
+
+    // Синхронизация иконок и событий аудио
+    audioPlayer.addEventListener('play', () => {
       playIcon.classList.add('hidden');
       pauseIcon.classList.remove('hidden');
-      
-      if(!progressInterval) {
-        progressInterval = setInterval(() => {
-          progress += 0.5;
-          if(progress >= 100) progress = 0;
-          
-          progressBar.style.width = `${progress}%`;
-          
-          const currentSecs = Math.floor((progress / 100) * 225);
-          const mins = Math.floor(currentSecs / 60);
-          const secs = (currentSecs % 60).toString().padStart(2, '0');
-          timeCurrent.innerText = `${mins}:${secs}`;
-          
-        }, 1000);
-      }
-    }
+    });
 
-    function stopPlaying() {
-      isPlaying = false;
+    audioPlayer.addEventListener('pause', () => {
       playIcon.classList.remove('hidden');
       pauseIcon.classList.add('hidden');
-      clearInterval(progressInterval);
-      progressInterval = null;
-    }
+    });
+
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      timeTotal.innerText = formatTime(audioPlayer.duration);
+    });
+
+    audioPlayer.addEventListener('timeupdate', () => {
+      const current = audioPlayer.currentTime;
+      const duration = audioPlayer.duration;
+      timeCurrent.innerText = formatTime(current);
+      if (duration) {
+        const percent = (current / duration) * 100;
+        progressBar.style.width = `${percent}%`;
+      }
+    });
+
+    // Автоматическое переключение трека при завершении (эффект бесконечной волны)
+    audioPlayer.addEventListener('ended', nextTrack);
+
+    // Перемотка трека по клику на прогресс бар
+    progressContainer.addEventListener('click', (e) => {
+      if (!audioPlayer.src) return;
+      const rect = progressContainer.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      audioPlayer.currentTime = pos * audioPlayer.duration;
+    });
+
+    // Громкость
+    const volumeContainer = document.getElementById('volume-container');
+    const volumeBar = document.getElementById('volume-bar');
+    let currentVolume = 1.0;
+
+    volumeContainer.addEventListener('click', (e) => {
+      const rect = volumeContainer.getBoundingClientRect();
+      const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      audioPlayer.volume = pos;
+      currentVolume = pos;
+      volumeBar.style.width = `${pos * 100}%`;
+    });
+
+    // Кнопка Mute
+    document.getElementById('mute-btn').addEventListener('click', () => {
+      if (audioPlayer.volume > 0) {
+        audioPlayer.volume = 0;
+        volumeBar.style.width = '0%';
+      } else {
+        audioPlayer.volume = currentVolume;
+        volumeBar.style.width = `${currentVolume * 100}%`;
+      }
+    });
+
   </script>
 </body>
 </html>
