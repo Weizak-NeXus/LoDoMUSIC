@@ -149,13 +149,13 @@
       <!-- Превью карточек для красоты -->
       <div class="flex gap-4 mb-12 fade-in-up" style="animation-delay: 0.4s;">
         <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative">
-          <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&q=80" class="w-full h-full object-cover opacity-60 mix-blend-luminosity">
+          <img src="https://picsum.photos/seed/music1/300/300" class="w-full h-full object-cover opacity-60 mix-blend-luminosity" alt="cover">
         </div>
         <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative -translate-y-4">
-          <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&q=80" class="w-full h-full object-cover opacity-80">
+          <img src="https://picsum.photos/seed/music2/300/300" class="w-full h-full object-cover opacity-80" alt="cover">
         </div>
         <div class="w-32 h-32 rounded-lg bg-neutral-900 overflow-hidden relative">
-          <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&q=80" class="w-full h-full object-cover opacity-60 mix-blend-luminosity">
+          <img src="https://picsum.photos/seed/music3/300/300" class="w-full h-full object-cover opacity-60 mix-blend-luminosity" alt="cover">
         </div>
       </div>
 
@@ -210,10 +210,21 @@
           
           <div class="flex items-center gap-4">
             <button class="text-neutral-400 hover:text-white transition-colors"><i data-lucide="bell" class="w-5 h-5"></i></button>
-            <div class="flex items-center gap-2 cursor-pointer bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 px-3 py-1.5 rounded-full transition-colors">
-              <div class="w-6 h-6 bg-white text-black rounded-full flex items-center justify-center text-xs font-bold" id="user-avatar">?</div>
-              <span class="text-xs font-medium text-white pr-1" id="user-name-display">User</span>
+            
+            <!-- Профиль с выпадающим меню -->
+            <div class="relative">
+              <div id="profile-btn" class="flex items-center gap-2 cursor-pointer bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 px-3 py-1.5 rounded-full transition-colors select-none">
+                <div class="w-6 h-6 bg-white text-black rounded-full flex items-center justify-center text-xs font-bold" id="user-avatar">?</div>
+                <span class="text-xs font-medium text-white pr-1" id="user-name-display">User</span>
+              </div>
+              
+              <!-- Выпадающее меню (скрыто по умолчанию) -->
+              <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-[#121212] border border-neutral-800 rounded-lg shadow-xl hidden flex-col overflow-hidden z-50">
+                <div class="px-4 py-2 border-b border-neutral-800 text-xs text-neutral-500">Настройки аккаунта</div>
+                <button id="logout-btn" class="px-4 py-3 text-left text-sm text-red-500 hover:bg-neutral-800 transition-colors font-medium">Выйти из аккаунта</button>
+              </div>
             </div>
+            
           </div>
         </header>
 
@@ -239,7 +250,7 @@
       <!-- Трек инфо -->
       <div class="flex items-center gap-4 w-1/3 min-w-[180px]">
         <div class="w-12 h-12 rounded bg-neutral-900 overflow-hidden relative border border-neutral-800">
-          <img id="player-img" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&q=80" class="w-full h-full object-cover">
+          <img id="player-img" src="https://picsum.photos/seed/default/100/100" class="w-full h-full object-cover">
         </div>
         <div class="flex flex-col">
           <span id="player-title" class="text-white text-sm font-medium truncate">Midnight Drive</span>
@@ -289,9 +300,9 @@
 
   <!-- ================= СКРИПТЫ (Логика приложения и Firebase) ================= -->
   <script type="module">
-    // Импорт SDK Firebase
+    // Импорт SDK Firebase (Добавлены onAuthStateChanged и signOut)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
     // Ваши настройки Firebase
     const firebaseConfig = {
@@ -310,20 +321,20 @@
     // Инициализация иконок Lucide
     lucide.createIcons();
 
-    // Данные для приложения
+    // Данные для приложения (картинки заменены на надежный picsum.photos)
     const RECENT_DATA = [
-      { id: 1, title: 'Lo-Fi Chill', artist: 'Для работы и учебы', img: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&q=80', color: 'from-orange-900/40' },
-      { id: 2, title: 'Кино', artist: 'Лучшее', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&q=80', color: 'from-neutral-700/40' },
-      { id: 3, title: 'Synthwave', artist: 'Ретро электроника', img: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&q=80', color: 'from-purple-900/40' },
-      { id: 4, title: 'Deep Focus', artist: 'Атмосферный эмбиент', img: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&q=80', color: 'from-blue-900/40' },
+      { id: 1, title: 'Lo-Fi Chill', artist: 'Для работы и учебы', img: 'https://picsum.photos/seed/chill/300/300', color: 'from-orange-900/40' },
+      { id: 2, title: 'Кино', artist: 'Лучшее', img: 'https://picsum.photos/seed/kino/300/300', color: 'from-neutral-700/40' },
+      { id: 3, title: 'Synthwave', artist: 'Ретро электроника', img: 'https://picsum.photos/seed/synth/300/300', color: 'from-purple-900/40' },
+      { id: 4, title: 'Deep Focus', artist: 'Атмосферный эмбиент', img: 'https://picsum.photos/seed/focus/300/300', color: 'from-blue-900/40' },
     ];
 
     const CURATED_DATA = [
-      { id: 11, title: 'Ночной Токио', desc: 'Эстетика неоновых улиц', img: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=300&q=80', color: 'from-pink-900/40' },
-      { id: 12, title: 'Лесной Эмбиент', desc: 'Звуки природы и спокойствие', img: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=300&q=80', color: 'from-green-900/40' },
-      { id: 13, title: 'Меланхолия', desc: 'Грустные мотивы', img: 'https://images.unsplash.com/photo-1458682625221-3a45f8a844c7?w=300&q=80', color: 'from-cyan-900/40' },
-      { id: 14, title: 'Минимал Техно', desc: 'Четкий ритм', img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80', color: 'from-neutral-800/40' },
-      { id: 15, title: 'Акустика', desc: 'Гитара и вокал', img: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&q=80', color: 'from-yellow-900/40' },
+      { id: 11, title: 'Ночной Токио', desc: 'Эстетика неоновых улиц', img: 'https://picsum.photos/seed/tokyo/300/300', color: 'from-pink-900/40' },
+      { id: 12, title: 'Лесной Эмбиент', desc: 'Звуки природы и спокойствие', img: 'https://picsum.photos/seed/forest/300/300', color: 'from-green-900/40' },
+      { id: 13, title: 'Меланхолия', desc: 'Грустные мотивы', img: 'https://picsum.photos/seed/sad/300/300', color: 'from-cyan-900/40' },
+      { id: 14, title: 'Минимал Техно', desc: 'Четкий ритм', img: 'https://picsum.photos/seed/techno/300/300', color: 'from-neutral-800/40' },
+      { id: 15, title: 'Акустика', desc: 'Гитара и вокал', img: 'https://picsum.photos/seed/guitar/300/300', color: 'from-yellow-900/40' },
     ];
 
     // Элементы DOM
@@ -333,6 +344,11 @@
       main: document.getElementById('screen-main')
     };
     
+    // Элементы профиля
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    const logoutBtn = document.getElementById('logout-btn');
+
     // Переменные состояния
     let userName = '';
     let isPlaying = false;
@@ -349,6 +365,37 @@
         screens[showId].classList.add('screen-visible');
       }, 500);
     }
+    
+    function updateUIWithUser(name) {
+      document.getElementById('welcome-text').innerText = `Привет, ${name}.`;
+      document.getElementById('user-avatar').innerText = name.charAt(0).toUpperCase();
+      document.getElementById('user-name-display').innerText = name;
+    }
+
+    // --- ПРОСЛУШКА СОСТОЯНИЯ АВТОРИЗАЦИИ (Для сохранения сессии) ---
+    let isInitialLoad = true;
+    let isManualLogin = false; // Флаг, чтобы не перепрыгивать экраны при ручном входе
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Пользователь уже авторизован
+        userName = user.displayName || user.email.split('@')[0];
+        updateUIWithUser(userName);
+        renderContent();
+        
+        // Если это первоначальная загрузка (мы только обновили страницу)
+        if (isInitialLoad && !isManualLogin) {
+          screens.auth.classList.replace('screen-visible', 'screen-hidden');
+          screens.main.classList.replace('screen-hidden', 'screen-visible');
+        }
+      } else {
+        // Пользователь не авторизован (или вышел)
+        screens.main.classList.replace('screen-visible', 'screen-hidden');
+        screens.onboarding.classList.replace('screen-visible', 'screen-hidden');
+        screens.auth.classList.replace('screen-hidden', 'screen-visible');
+      }
+      isInitialLoad = false;
+    });
 
     // --- 1. АВТОРИЗАЦИЯ FIREBASE ---
     document.getElementById('auth-form').addEventListener('submit', async (e) => {
@@ -362,6 +409,7 @@
       if(usernameInput && emailInput && passwordInput) {
         errorDiv.classList.add('hidden');
         btnText.innerText = "Подключение...";
+        isManualLogin = true; // Отмечаем, что вход совершен вручную
 
         try {
           let userCredential;
@@ -369,26 +417,26 @@
           // Попытка войти в существующий аккаунт
           try {
             userCredential = await signInWithEmailAndPassword(auth, emailInput, passwordInput);
+            
+            // Если это просто вход - перекидываем сразу в главное приложение
+            userName = userCredential.user.displayName || usernameInput;
+            updateUIWithUser(userName);
+            switchScreen('auth', 'main');
+            
           } catch (signInError) {
-            // Если аккаунт не найден (или другая ошибка), пытаемся зарегистрировать новый
+            // Если аккаунт не найден, пытаемся зарегистрировать новый
             userCredential = await createUserWithEmailAndPassword(auth, emailInput, passwordInput);
             
             // Сохраняем никнейм в профиле нового пользователя
             await updateProfile(userCredential.user, {
               displayName: usernameInput
             });
+            
+            userName = usernameInput;
+            updateUIWithUser(userName);
+            // Если это регистрация - показываем онбординг (приветствие)
+            switchScreen('auth', 'onboarding');
           }
-
-          // Успешный вход или регистрация
-          const user = userCredential.user;
-          userName = user.displayName || usernameInput;
-          
-          // Настраиваем тексты перед показом
-          document.getElementById('welcome-text').innerText = `Привет, ${userName}.`;
-          document.getElementById('user-avatar').innerText = userName.charAt(0).toUpperCase();
-          document.getElementById('user-name-display').innerText = userName;
-
-          switchScreen('auth', 'onboarding');
         } catch (error) {
           // Вывод ошибки пользователю
           errorDiv.classList.remove('hidden');
@@ -399,7 +447,8 @@
           } else if (error.code === 'auth/weak-password') {
             errorDiv.innerText = "Пароль слишком слабый (минимум 6 символов).";
           } else {
-            errorDiv.innerText = "Ошибка: " + error.message;
+            console.error(error);
+            errorDiv.innerText = "Ошибка: проверьте консоль разработчика.";
           }
         } finally {
           btnText.innerText = "Продолжить";
@@ -411,6 +460,29 @@
     document.getElementById('btn-start-app').addEventListener('click', () => {
       renderContent();
       switchScreen('onboarding', 'main');
+    });
+    
+    // --- ПРОФИЛЬ И ВЫХОД ИЗ АККАУНТА ---
+    profileBtn.addEventListener('click', () => {
+      profileMenu.classList.toggle('hidden');
+      profileMenu.classList.toggle('flex');
+    });
+
+    // Скрытие меню при клике вне его
+    document.addEventListener('click', (e) => {
+      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+        profileMenu.classList.add('hidden');
+        profileMenu.classList.remove('flex');
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.reload(); // Перезагружаем страницу после выхода для чистоты состояния
+      } catch (error) {
+        console.error("Ошибка при выходе: ", error);
+      }
     });
 
     // --- РЕНДЕР КОНТЕНТА ---
